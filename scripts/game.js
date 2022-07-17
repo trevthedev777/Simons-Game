@@ -32,5 +32,13 @@ function showScore() {
     document.getElementById("score").innerText = game.score;
 };
 
+function lightsOn(circ) {
+    document.getElementById(circ).classList.add("light");
+    // Removes the class afte 400ms
+    setTimeout(() => {
+        document.getElementById(circ).classList.remove("light");
+    }, 400);
+};
+
 // There are curly braces as we will export more than one function
-module.exports = { game, newGame, showScore, addTurn };
+module.exports = { game, newGame, showScore, addTurn, lightsOn };
