@@ -1,56 +1,78 @@
 let game = {
-    score: 0,
     currentGame: [],
     playerMoves: [],
+    score: 0,
     turnNumber: 0,
-    choices: ["button1", "button2", "button3", "button4"],
+    lastButton: "",
+    turnInProgress: false,
+    choices: ["button1", "button2", "button3", "button4"]
 };
 
-// New Game function:
-// Reset score to 0
-// Clear the playerMoves array 
-// Clear the currentGame array
 function newGame() {
-    game.score = 0;
-    game.playerMoves = [];
     game.currentGame = [];
-    showScore()
-    addTurn();
-};
+    game.playerMoves = [];
+    game.score = 0;
 
-// Add Turn
-// Clear the playerMoves array
-// Randomly add a button ID to the currentGame array
-// Call showTurns() function
+    for (let circle of document.getElementsByClassName("circle")) {
+        if (circle.getAttribute("data-listener") !== "true") {
+            circle.addEventListener("click", (e) => {
+                if (game.currentGame.length > 0 && !game.turnInProgress) {
+                    let move = e.target.getAttribute("id");
+                    game.lastButton = move;
+                    game.playerMoves.push(move);
+                    lightsOn(move);
+                    playerTurn();
+                }
+            });
+            circle.setAttribute("data-listener", "true");
+        }
+    }
+    showScore();
+    addTurn();
+}
+
 function addTurn() {
     game.playerMoves = [];
     game.currentGame.push(game.choices[(Math.floor(Math.random() * 4))]);
     showTurns();
-};
-
-// show score function
-function showScore() {
-    document.getElementById("score").innerText = game.score;
-};
-
-function lightsOn(circ) {
-    document.getElementById(circ).classList.add("light");
-    // Removes the class afte 400ms
-    setTimeout(() => {
-        document.getElementById(circ).classList.remove("light");
-    }, 400);
-};
+}
 
 function showTurns() {
+    game.turnInProgress = true;
     game.turnNumber = 0;
-    let turns = setInterval(() => {
+    let turns = setInterval(function () {
         lightsOn(game.currentGame[game.turnNumber]);
         game.turnNumber++;
         if (game.turnNumber >= game.currentGame.length) {
             clearInterval(turns);
+            game.turnInProgress = false;
         }
     }, 800);
-};
+}
 
-// There are curly braces as we will export more than one function
-module.exports = { game, newGame, showScore, addTurn, lightsOn, showTurns };
+function lightsOn(circ) {
+    document.getElementById(circ).classList.add("light");
+    setTimeout(function () {
+        document.getElementById(circ).classList.remove("light");
+    }, 400);
+}
+
+function playerTurn() {
+    let i = game.playerMoves.length - 1;
+    if (game.currentGame[i] === game.playerMoves[i]) {
+        if (game.currentGame.length === game.playerMoves.length) {
+            game.score++;
+            showScore();
+            addTurn();
+        }
+    } else {
+        alert("Wrong move!");
+        newGame();
+    }
+}
+
+function showScore() {
+    document.getElementById("score").innerText = game.score;
+}
+
+module.exports = { game, newGame, showScore, addTurn, lightsOn, showTurns, playerTurn };
