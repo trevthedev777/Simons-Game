@@ -2,6 +2,7 @@ let game = {
     score: 0,
     currentGame: [],
     playerMoves: [],
+    turnNumber: 0,
     choices: ["button1", "button2", "button3", "button4"],
 };
 
@@ -24,7 +25,7 @@ function newGame() {
 function addTurn() {
     game.playerMoves = [];
     game.currentGame.push(game.choices[(Math.floor(Math.random() * 4))]);
-    // showTurns();
+    showTurns();
 };
 
 // show score function
@@ -40,5 +41,16 @@ function lightsOn(circ) {
     }, 400);
 };
 
+function showTurns() {
+    game.turnNumber = 0;
+    let turns = setInterval(() => {
+        lightsOn(game.currentGame[game.turnNumber]);
+        game.turnNumber++;
+        if (game.turnNumber >= game.currentGame.length) {
+            clearInterval(turns);
+        }
+    }, 800);
+};
+
 // There are curly braces as we will export more than one function
-module.exports = { game, newGame, showScore, addTurn, lightsOn };
+module.exports = { game, newGame, showScore, addTurn, lightsOn, showTurns };
